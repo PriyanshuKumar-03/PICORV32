@@ -1,0 +1,27 @@
+Mapping and compare statistics
+================================================================================
+                     Compare Result       Golden            Revised
+--------------------------------------------------------------------------------
+Root module name                          picorv32_wb       picorv32_wb       
+
+Primary inputs                               102                102
+   Mapped                                    102                102
+
+Primary outputs                              239                239
+   Mapped                                    239                239
+      Equivalent                239
+
+State key points                            2505               2399
+   Mapped                                   2399               2399
+      Equivalent               2399
+   Unmapped                                   88                  0
+      Extra                                    5                  0
+      Unreachable                             83                  0
+   Merged                                     18                  0
+================================================================================
+Compare results of instance/output/pin equivalences and/or sequential merge      
+================================================================================
+Compared points      DFF       Total   
+--------------------------------------------------------------------------------
+Equivalent           18        18      
+================================================================================

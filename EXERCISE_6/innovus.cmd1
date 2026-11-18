@@ -1,0 +1,121 @@
+#######################################################
+#                                                     
+#  Innovus Command Logging File                     
+#  Created on Fri Dec 19 12:48:38 2025                
+#                                                     
+#######################################################
+
+#@(#)CDS: Innovus v21.35-s114_1 (64bit) 10/13/2022 12:11 (Linux 3.10.0-693.el7.x86_64)
+#@(#)CDS: NanoRoute 21.35-s114_1 NR220912-2004/21_15-UB (database version 18.20.592_1) {superthreading v2.17}
+#@(#)CDS: AAE 21.15-s039 (64bit) 10/13/2022 (Linux 3.10.0-693.el7.x86_64)
+#@(#)CDS: CTE 21.15-s038_1 () Sep 20 2022 11:42:13 ( )
+#@(#)CDS: SYNTECH 21.15-s012_1 () Sep  5 2022 10:25:51 ( )
+#@(#)CDS: CPE v21.15-s076
+#@(#)CDS: IQuantus/TQuantus 21.1.1-s867 (64bit) Sun Jun 26 22:12:54 PDT 2022 (Linux 3.10.0-693.el7.x86_64)
+
+set_global _enable_mmmc_by_default_flow      $CTE::mmmc_default
+suppressMessage ENCEXT-2799
+getVersion
+getVersion
+getVersion
+win
+restoreDesign prePlacement.dat picorv32_wb
+saveDesign pre_placement_design
+fit
+setRouteMode -earlyGlobalHonorMsvRouteConstraint false -earlyGlobalRoutePartitionPinGuide true
+setEndCapMode -reset
+setEndCapMode -boundary_tap false
+setNanoRouteMode -quiet -droutePostRouteSpreadWire 1
+setNanoRouteMode -quiet -droutePostRouteWidenWireRule LEFSpecialRouteSpec
+setNanoRouteMode -quiet -timingEngine {}
+setUsefulSkewMode -noBoundary false -maxAllowedDelay 1
+setPlaceMode -reset
+setPlaceMode -congEffort auto -timingDriven 1 -clkGateAware 1 -powerDriven 0 -ignoreScan 1 -reorderScan 1 -ignoreSpare 0 -placeIOPins 1 -moduleAwareSpare 0 -maxRouteLayer 9 -preserveRouting 1 -rmAffectedRouting 0 -checkRoute 0 -swapEEQ 0
+defIn genus.scan.def
+place_opt_design
+report_power > power_preCTS.txt
+report_area > area_preCTS.txt
+group_path -name R2R -from [all_registers] -to [all_registers]
+group_path -name I2R -from [all_inputs] -to [all_registers]
+group_path -name R2O -from [all_registers] -to [all_outputs]
+group_path -name I2O -from [all_inputs] -to [all_outputs]
+redirect -quiet {set honorDomain [getAnalysisMode -honorClockDomains]} > /dev/null
+timeDesign -preCTS -pathReports -drvReports -slackReports -numPaths 50 -prefix picorv32_wb_preCTS -outDir timingReports
+redirect -quiet {set honorDomain [getAnalysisMode -honorClockDomains]} > /dev/null
+timeDesign -preCTS -hold -pathReports -slackReports -numPaths 50 -prefix picorv32_wb_preCTS -outDir timingReports
+saveDesign preCTS
+add_ndr -width {Metal1 0.12 Metal2 0.16 Metal3 0.16 Metal4 0.16 Metal5 0.16 Metal6 0.16 Metal7 0.16 Metal8 0.16 Metal9 0.16 Metal10 0.44 Metal11 0.44 } -name 2W1S
+create_route_type -name clk_trunk_type -top_preferred_layer 9 -bottom_preferred_layer 8 -non_default_rule 2W1S -shield_net VSS -shield_side both_side
+set_ccopt_property route_type clk_trunk_type -net_type trunk
+set_ccopt_property target_max_trans 0.04 -net_type trunk
+create_route_type -name clk_leaf_type -top_preferred_layer 9 -bottom_preferred_layer 8 -shield_net VSS -shield_side both_side
+set_ccopt_property route_type clk_leaf_type -net_type leaf
+set_ccopt_property target_max_trans 0.04 -net_type leaf
+set_ccopt_property target_skew 1.0
+create_ccopt_clock_tree_spec -file clk.spec
+ccopt_design
+report_ccopt_clock_trees > report_clock_tree.txt
+report_ccopt_skew_groups > report_skew_groups.txt
+report_power > power_postCTS.txt
+report_area > area_postCTS.txt
+redirect -quiet {set honorDomain [getAnalysisMode -honorClockDomains]} > /dev/null
+timeDesign -postCTS -pathReports -drvReports -slackReports -numPaths 50 -prefix picorv32_wb_postCTS -outDir timingReports
+redirect -quiet {set honorDomain [getAnalysisMode -honorClockDomains]} > /dev/null
+timeDesign -postCTS -hold -pathReports -slackReports -numPaths 50 -prefix picorv32_wb_postCTS -outDir timingReports
+saveDesign preRouting
+setRouteMode -earlyGlobalHonorMsvRouteConstraint false -earlyGlobalRoutePartitionPinGuide true
+setEndCapMode -reset
+setEndCapMode -boundary_tap false
+setNanoRouteMode -quiet -drouteUseMultiCutViaEffort medium
+setUsefulSkewMode -noBoundary false -maxAllowedDelay 1
+setNanoRouteMode -quiet -routeWithTimingDriven 1
+setNanoRouteMode -quiet -routeWithSiDriven 1
+setNanoRouteMode -quiet -routeTopRoutingLayer 11
+setNanoRouteMode -quiet -routeBottomRoutingLayer 1
+setNanoRouteMode -quiet -drouteEndIteration default
+setNanoRouteMode -quiet -routeWithTimingDriven true
+setNanoRouteMode -quiet -routeWithSiDriven true
+routeDesign -globalDetail
+setAnalysisMode -modeType onChipVariation -cppr both
+setAnalysisMode -analysisType onChipVariation -cppr both
+optDesign -postRoute -setup -hold
+optDesign -postRoute -setup -hold
+report_power > power_postRoute.txt
+report_area > area_postRoute.txt
+redirect -quiet {set honorDomain [getAnalysisMode -honorClockDomains]} > /dev/null
+timeDesign -postRoute -pathReports -drvReports -slackReports -numPaths 50 -prefix picorv32_wb_postRoute -outDir timingReports
+redirect -quiet {set honorDomain [getAnalysisMode -honorClockDomains]} > /dev/null
+timeDesign -postRoute -hold -pathReports -slackReports -numPaths 50 -prefix picorv32_wb_postRoute -outDir timingReports
+getMultiCpuUsage -localCpu
+get_verify_drc_mode -disable_rules -quiet
+get_verify_drc_mode -quiet -area
+get_verify_drc_mode -quiet -layer_range
+get_verify_drc_mode -check_ndr_spacing -quiet
+get_verify_drc_mode -check_only -quiet
+get_verify_drc_mode -check_same_via_cell -quiet
+get_verify_drc_mode -exclude_pg_net -quiet
+get_verify_drc_mode -ignore_trial_route -quiet
+get_verify_drc_mode -max_wrong_way_halo -quiet
+get_verify_drc_mode -use_min_spacing_on_block_obs -quiet
+get_verify_drc_mode -limit -quiet
+set_verify_drc_mode -disable_rules {} -check_ndr_spacing auto -check_only default -check_same_via_cell true -exclude_pg_net false -ignore_trial_route false -ignore_cell_blockage false -use_min_spacing_on_block_obs auto -report picorv32_wb.drc.rpt -limit 1000
+verify_drc
+set_verify_drc_mode -area {0 0 0 0}
+checkDesign -netlist
+setMetalFill -layer Metal1 -opcActiveSpacing 0.060 -minDensity 10.00
+setMetalFill -layer Metal2 -opcActiveSpacing 0.070 -minDensity 10.00
+setMetalFill -layer Metal3 -opcActiveSpacing 0.070 -minDensity 10.00
+setMetalFill -layer Metal4 -opcActiveSpacing 0.070 -minDensity 10.00
+setMetalFill -layer Metal5 -opcActiveSpacing 0.070 -minDensity 10.00
+setMetalFill -layer Metal6 -opcActiveSpacing 0.070 -minDensity 10.00
+setMetalFill -layer Metal7 -opcActiveSpacing 0.070 -minDensity 10.00
+setMetalFill -layer Metal8 -opcActiveSpacing 0.070 -minDensity 10.00
+setMetalFill -layer Metal9 -opcActiveSpacing 0.070 -minDensity 10.00
+setMetalFill -layer Metal10 -opcActiveSpacing 0.200 -minDensity 10.00
+setMetalFill -layer Metal11 -opcActiveSpacing 0.200 -minDensity 10.00
+addMetalFill -layer { Metal1 Metal2 Metal3 Metal4 Metal5 Metal6 Metal7 Metal8 Metal9 Metal10 Metal11 } -net { VSS VDD }
+setExtractRCMode -engine postRoute -effortLevel signoff -coupled true
+signoffTimeDesign
+extractRC
+reportNetStat
+reportNetStat > gates_postRoute.txt

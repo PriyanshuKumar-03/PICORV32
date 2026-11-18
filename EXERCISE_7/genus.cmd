@@ -1,0 +1,8 @@
+# Cadence Genus(TM) Synthesis Solution, Version 21.15-s080_1, built Sep 23 2022 12:57:55
+
+# Date: Fri Dec 19 16:02:04 2025
+# Host: cn90.it.auth.gr (x86_64 w/Linux 5.14.0-570.52.1.el9_6.x86_64) (12cores*12cpus*1physical cpu*AMD EPYC 7352 24-Core Processor 512KB)
+# OS:   Rocky Linux release 9.7 (Blue Onyx)
+
+source ../script/genus_init_7.tcl
+exit

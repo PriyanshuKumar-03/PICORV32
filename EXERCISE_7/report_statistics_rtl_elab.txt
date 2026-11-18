@@ -1,0 +1,25 @@
+Mapping and compare statistics
+================================================================================
+                     Compare Result       Golden            Revised
+--------------------------------------------------------------------------------
+Root module name                          picorv32_wb       picorv32_wb       
+
+Primary inputs                               102                102
+   Mapped                                    102                102
+
+Undriven key points                            0                  4
+   Unmapped                                    0                  4
+      Extra                                    0                  4
+
+Primary outputs                              239                239
+   Mapped                                    239                239
+      Equivalent                239
+
+Black-box key points                           1                  1
+   Mapped                                      1                  1
+      Equivalent                  1
+
+State key points                             106                106
+   Mapped                                    106                106
+      Equivalent                106
+================================================================================

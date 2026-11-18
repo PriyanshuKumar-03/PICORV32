@@ -1,0 +1,65 @@
+#######################################################
+#                                                     
+#  Innovus Command Logging File                     
+#  Created on Thu Dec 11 21:12:35 2025                
+#                                                     
+#######################################################
+
+#@(#)CDS: Innovus v21.35-s114_1 (64bit) 10/13/2022 12:11 (Linux 3.10.0-693.el7.x86_64)
+#@(#)CDS: NanoRoute 21.35-s114_1 NR220912-2004/21_15-UB (database version 18.20.592_1) {superthreading v2.17}
+#@(#)CDS: AAE 21.15-s039 (64bit) 10/13/2022 (Linux 3.10.0-693.el7.x86_64)
+#@(#)CDS: CTE 21.15-s038_1 () Sep 20 2022 11:42:13 ( )
+#@(#)CDS: SYNTECH 21.15-s012_1 () Sep  5 2022 10:25:51 ( )
+#@(#)CDS: CPE v21.15-s076
+#@(#)CDS: IQuantus/TQuantus 21.1.1-s867 (64bit) Sun Jun 26 22:12:54 PDT 2022 (Linux 3.10.0-693.el7.x86_64)
+
+set_global _enable_mmmc_by_default_flow      $CTE::mmmc_default
+suppressMessage ENCEXT-2799
+getVersion
+getVersion
+getVersion
+win
+restoreDesign preCTS_design.dat picorv32_wb
+saveDesign preCTS
+create_route_type -name clk_trunk_type -top_preferred_layer 9 -bottom_preferred_layer 8 -non_default_rule 2W1S -shield_net VSS -shield_side both_side
+set_ccopt_property route_type clk_trunk_type -net_type trunk
+set_ccopt_property target_max_trans 0.042 -net_type trunk
+create_route_type -name clk_leaf_type -top_preferred_layer 9 -bottom_preferred_layer 8 -shield_net VSS -shield_side both_side
+set_ccopt_property route_type clk_leaf_type -net_type leaf
+set_ccopt_property target_max_trans 0.042 -net_type leaf
+set_ccopt_property target_skew 1.0
+create_ccopt_clock_tree_spec -file clk.spec
+ccopt_design
+report_ccopt_clock_trees > report_clock_tree.txt
+report_ccopt_skew_groups > report_skew_groups.txt
+report_ccopt_clock_trees > report_clock_tree.txt
+report_ccopt_skew_groups > report_skew_groups.txt
+report_area > area_postCTS.txt
+report_power > power_postCTS.txt
+redirect -quiet {set honorDomain [getAnalysisMode -honorClockDomains]} > /dev/null
+timeDesign -postCTS -pathReports -drvReports -slackReports -numPaths 50 -prefix picorv32_wb_postCTS -outDir timingReports
+redirect -quiet {set honorDomain [getAnalysisMode -honorClockDomains]} > /dev/null
+timeDesign -postCTS -hold -pathReports -slackReports -numPaths 50 -prefix picorv32_wb_postCTS -outDir timingReports
+setRouteMode -earlyGlobalHonorMsvRouteConstraint false -earlyGlobalRoutePartitionPinGuide true
+setEndCapMode -reset
+setEndCapMode -boundary_tap false
+setNanoRouteMode -quiet -drouteUseMultiCutViaEffort medium
+setUsefulSkewMode -noBoundary false -maxAllowedDelay 1
+setNanoRouteMode -quiet -routeWithTimingDriven 1
+setNanoRouteMode -quiet -routeWithSiDriven 1
+setNanoRouteMode -quiet -routeTopRoutingLayer 11
+setNanoRouteMode -quiet -routeBottomRoutingLayer 1
+setNanoRouteMode -quiet -drouteEndIteration default
+setNanoRouteMode -quiet -routeWithTimingDriven true
+setNanoRouteMode -quiet -routeWithSiDriven true
+routeDesign -globalDetail
+optDesign -postRoute -hold -setup
+setAnalysisMode -analysisType onChipVariation -cppr both
+report_power > power_postRoute.txt
+report_area > area_postRoute.txt
+report_area > area_postRoute.txt
+report_power > power_postRoute.txt
+redirect -quiet {set honorDomain [getAnalysisMode -honorClockDomains]} > /dev/null
+timeDesign -postRoute -pathReports -drvReports -slackReports -numPaths 50 -prefix picorv32_wb_postRoute -outDir timingReports
+redirect -quiet {set honorDomain [getAnalysisMode -honorClockDomains]} > /dev/null
+timeDesign -postRoute -hold -pathReports -slackReports -numPaths 50 -prefix picorv32_wb_postRoute -outDir timingReports
